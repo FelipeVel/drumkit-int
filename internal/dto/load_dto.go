@@ -21,13 +21,13 @@ type PartyDTO struct {
 // StopPartyDTO extends PartyDTO with scheduling fields for pickup/delivery stops.
 type StopPartyDTO struct {
 	PartyDTO
-	BusinessHours string    `json:"businessHours,omitempty"`
-	ReadyTime     time.Time `json:"readyTime,omitempty"`
-	ApptTime      time.Time `json:"apptTime,omitempty"`
-	ApptNote      string    `json:"apptNote,omitempty"`
-	Timezone      string    `json:"timezone,omitempty"`
-	WarehouseId   string    `json:"warehouseId,omitempty"`
-	MustDeliver   string    `json:"mustDeliver,omitempty"`
+	BusinessHours string     `json:"businessHours,omitempty"`
+	ReadyTime     *time.Time `json:"readyTime,omitempty"`
+	ApptTime      *time.Time `json:"apptTime,omitempty"`
+	ApptNote      string     `json:"apptNote,omitempty"`
+	Timezone      string     `json:"timezone,omitempty"`
+	WarehouseId   string     `json:"warehouseId,omitempty"`
+	MustDeliver   string     `json:"mustDeliver,omitempty"`
 }
 
 // CarrierDTO is the wire representation of carrier and driver information.
@@ -48,15 +48,15 @@ type CarrierDTO struct {
 	DispatchState            string    `json:"dispatchState,omitempty"`
 	ExternalTMSTruckId       string    `json:"externalTMSTruckId,omitempty"`
 	ExternalTMSTrailerId     string    `json:"externalTMSTrailerId,omitempty"`
-	ConfirmationSentTime     time.Time `json:"confirmationSentTime,omitempty"`
-	ConfirmationReceivedTime time.Time `json:"confirmationReceivedTime,omitempty"`
-	DispatchedTime           time.Time `json:"dispatchedTime,omitempty"`
-	ExpectedPickupTime       time.Time `json:"expectedPickupTime,omitempty"`
-	PickupStart              time.Time `json:"pickupStart,omitempty"`
-	PickupEnd                time.Time `json:"pickupEnd,omitempty"`
-	ExpectedDeliveryTime     time.Time `json:"expectedDeliveryTime,omitempty"`
-	DeliveryStart            time.Time `json:"deliveryStart,omitempty"`
-	DeliveryEnd              time.Time `json:"deliveryEnd,omitempty"`
+	ConfirmationSentTime     *time.Time `json:"confirmationSentTime,omitempty"`
+	ConfirmationReceivedTime *time.Time `json:"confirmationReceivedTime,omitempty"`
+	DispatchedTime           *time.Time `json:"dispatchedTime,omitempty"`
+	ExpectedPickupTime       *time.Time `json:"expectedPickupTime,omitempty"`
+	PickupStart              *time.Time `json:"pickupStart,omitempty"`
+	PickupEnd                *time.Time `json:"pickupEnd,omitempty"`
+	ExpectedDeliveryTime     *time.Time `json:"expectedDeliveryTime,omitempty"`
+	DeliveryStart            *time.Time `json:"deliveryStart,omitempty"`
+	DeliveryEnd              *time.Time `json:"deliveryEnd,omitempty"`
 	SignedBy                 string    `json:"signedBy,omitempty"`
 	ExternalTMSId            string    `json:"externalTMSId,omitempty"`
 }
