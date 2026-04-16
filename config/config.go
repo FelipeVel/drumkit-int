@@ -14,7 +14,6 @@ type Config struct {
 	TurvoAPIKey       string
 	TurvoClientID     string
 	TurvoClientSecret string
-	TurvoTokenURL     string
 	TurvoUsername     string
 	TurvoPassword     string
 	HTTPTimeoutSec    int
@@ -32,7 +31,6 @@ func Load() *Config {
 		TurvoAPIKey:       getEnv("TURVO_API_KEY", ""),
 		TurvoClientID:     getEnv("TURVO_CLIENT_ID", ""),
 		TurvoClientSecret: getEnv("TURVO_CLIENT_SECRET", ""),
-		TurvoTokenURL:     getEnv("TURVO_TOKEN_URL", ""),
 		TurvoUsername:     getEnv("TURVO_USERNAME", ""),
 		TurvoPassword:     getEnv("TURVO_PASSWORD", ""),
 		HTTPTimeoutSec:    getEnvInt("HTTP_TIMEOUT_SEC", 10),

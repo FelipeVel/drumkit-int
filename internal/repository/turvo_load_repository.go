@@ -67,9 +67,9 @@ type turvoLoadsResponse struct {
 }
 
 type turvoAuthResponse struct {
-	AccessToken  string    `json:"access_token"`
-	RefreshToken string    `json:"refresh_token"`
-	ExpiresAt    time.Time `json:"expires_at"`
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+	ExpiresIn    int    `json:"expires_in"` // seconds until the token expires
 }
 
 // ---------------------------------------------------------------------------
@@ -122,7 +122,7 @@ func (tc *tokenCache) fetchToken(cfg *config.Config, client *http.Client) (strin
 	}
 
 	start := time.Now()
-	path := cfg.TurvoTokenURL + "?client_id=" + cfg.TurvoClientID + "&client_secret=" + cfg.TurvoClientSecret
+	path := cfg.TurvoBaseURL + "/oauth/token?client_id=" + cfg.TurvoClientID + "&client_secret=" + cfg.TurvoClientSecret
 	slog.Info("outbound request",
 		slog.String("direction", "outbound"),
 		slog.String("method", http.MethodPost),
@@ -147,7 +147,7 @@ func (tc *tokenCache) fetchToken(cfg *config.Config, client *http.Client) (strin
 	respBody, _ := io.ReadAll(resp.Body)
 	slog.Info("outbound response",
 		slog.String("direction", "outbound"),
-		slog.String("url", cfg.TurvoTokenURL),
+		slog.String("url", path),
 		slog.Int("status", resp.StatusCode),
 		slog.Int64("latency_ms", latency),
 		slog.String("body", truncate(string(respBody), 500)),
@@ -164,7 +164,7 @@ func (tc *tokenCache) fetchToken(cfg *config.Config, client *http.Client) (strin
 
 	tc.accessToken = authResp.AccessToken
 	tc.refreshToken = authResp.RefreshToken
-	tc.expiresAt = authResp.ExpiresAt
+	tc.expiresAt = time.Now().Add(time.Duration(authResp.ExpiresIn) * time.Second)
 
 	return tc.accessToken, nil
 }
