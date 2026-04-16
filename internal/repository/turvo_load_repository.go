@@ -29,7 +29,7 @@ type turvoStatus struct {
 }
 
 type turvoCustomerEntry struct {
-	ID       int  `json:"id"`
+	ID       int `json:"id"`
 	Customer struct {
 		ID   int    `json:"id"`
 		Name string `json:"name"`
@@ -38,7 +38,7 @@ type turvoCustomerEntry struct {
 }
 
 type turvoCarrierEntry struct {
-	ID      int  `json:"id"`
+	ID      int `json:"id"`
 	Carrier struct {
 		ID   int    `json:"id"`
 		Name string `json:"name"`
@@ -109,9 +109,11 @@ func (tc *tokenCache) invalidate() {
 // Must be called with tc.mu held.
 func (tc *tokenCache) fetchToken(cfg *config.Config, client *http.Client) (string, error) {
 	payload := map[string]string{
-		"client_id":     cfg.TurvoClientID,
-		"client_secret": cfg.TurvoClientSecret,
-		"grant_type":    "client_credentials",
+		"grant_type": "password",
+		"username":   cfg.TurvoUsername,
+		"password":   cfg.TurvoPassword,
+		"scope":      "read+trust+write",
+		"type":       "business",
 	}
 
 	body, err := json.Marshal(payload)
@@ -120,14 +122,15 @@ func (tc *tokenCache) fetchToken(cfg *config.Config, client *http.Client) (strin
 	}
 
 	start := time.Now()
+	path := cfg.TurvoTokenURL + "?client_id=" + cfg.TurvoClientID + "&client_secret=" + cfg.TurvoClientSecret
 	slog.Info("outbound request",
 		slog.String("direction", "outbound"),
 		slog.String("method", http.MethodPost),
-		slog.String("url", cfg.TurvoTokenURL),
+		slog.String("url", path),
 		slog.String("body", string(body)),
 	)
 
-	req, err := http.NewRequest(http.MethodPost, cfg.TurvoTokenURL, bytes.NewReader(body))
+	req, err := http.NewRequest(http.MethodPost, path, bytes.NewReader(body))
 	if err != nil {
 		return "", fmt.Errorf("turvo auth: build request: %w", err)
 	}
