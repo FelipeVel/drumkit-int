@@ -337,7 +337,8 @@ func turvoToModel(tl turvoLoad) model.Load {
 
 	if len(tl.CustomerOrder) > 0 && !tl.CustomerOrder[0].Deleted {
 		load.Customer = model.Party{
-			Name: tl.CustomerOrder[0].Customer.Name,
+			ExternalTMSId: fmt.Sprintf("%d", tl.CustomerOrder[0].Customer.ID),
+			Name:          tl.CustomerOrder[0].Customer.Name,
 		}
 	}
 
