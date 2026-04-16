@@ -20,7 +20,7 @@ import (
 // ---------------------------------------------------------------------------
 
 type turvoStatusCode struct {
-	Key   int    `json:"key"`
+	Key   string `json:"key"`
 	Value string `json:"value"`
 }
 
@@ -57,7 +57,7 @@ type turvoLoad struct {
 }
 
 type turvoLoadsResponse struct {
-	Data       []turvoLoad `json:"data"`
+	Shipments  []turvoLoad `json:"shipments"`
 	Pagination struct {
 		Total int `json:"total"`
 		Pages int `json:"pages"`
@@ -205,13 +205,20 @@ func (r *TurvoLoadRepository) GetAll() ([]model.Load, error) {
 		return nil, fmt.Errorf("turvo GetAll: unexpected status %d: %s", statusCode, body)
 	}
 
-	var response turvoLoadsResponse
+	type turvoLoadsResponseFull struct {
+		Status  string             `json:"status"`
+		Details turvoLoadsResponse `json:"details"`
+	}
+
+	var response turvoLoadsResponseFull
 	if err := json.Unmarshal(body, &response); err != nil {
 		return nil, fmt.Errorf("turvo GetAll: decode response: %w", err)
 	}
 
-	loads := make([]model.Load, 0, len(response.Data))
-	for _, tl := range response.Data {
+	fmt.Println(response.Details.Shipments)
+
+	loads := make([]model.Load, 0, len(response.Details.Shipments))
+	for _, tl := range response.Details.Shipments {
 		loads = append(loads, turvoToModel(tl))
 	}
 	return loads, nil
