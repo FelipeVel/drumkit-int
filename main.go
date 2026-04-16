@@ -31,8 +31,8 @@ func main() {
 	router.Use(gin.Recovery())
 	router.Use(middleware.RequestLogger())
 
-	// 5. Register routes under /loads.
-	ctrl.RegisterRoutes(router.Group("/loads"))
+	// 5. Register routes under /v1.
+	ctrl.RegisterRoutes(router.Group("/v1"))
 
 	// 6. Start the server.
 	router.Run(cfg.ServerPort)
