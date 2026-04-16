@@ -46,10 +46,19 @@ type turvoCarrierEntry struct {
 	Deleted bool `json:"deleted"`
 }
 
+type turvoLane struct {
+	Start string `json:"start"`
+	End   string `json:"end"`
+}
+
 type turvoLoad struct {
 	ID            int                  `json:"id"`
 	CustomID      string               `json:"customId"`
 	Status        turvoStatus          `json:"status"`
+	LtlShipment   bool                 `json:"ltlShipment"`
+	StartDate     time.Time            `json:"startDate"`
+	EndDate       time.Time            `json:"endDate"`
+	Lane          turvoLane            `json:"lane"`
 	CustomerOrder []turvoCustomerEntry `json:"customerOrder"`
 	CarrierOrder  []turvoCarrierEntry  `json:"carrierOrder"`
 	Created       time.Time            `json:"created"`
@@ -333,6 +342,13 @@ func turvoToModel(tl turvoLoad) model.Load {
 		ExternalTMSLoadID: fmt.Sprintf("%d", tl.ID),
 		FreightLoadID:     tl.CustomID,
 		Status:            tl.Status.Code.Value,
+		LtlShipment:       tl.LtlShipment,
+		StartDate:         tl.StartDate,
+		EndDate:           tl.EndDate,
+		Lane: model.Lane{
+			Origin:      tl.Lane.Start,
+			Destination: tl.Lane.End,
+		},
 	}
 
 	if len(tl.CustomerOrder) > 0 && !tl.CustomerOrder[0].Deleted {
@@ -355,18 +371,28 @@ func turvoToModel(tl turvoLoad) model.Load {
 // expected by Turvo's shipment creation endpoint.
 func modelToTurvoPayload(load model.Load) map[string]any {
 	payload := map[string]any{
-		"customId": load.FreightLoadID,
+		"ltlShipment": load.LtlShipment,
+		"startDate": map[string]any{
+			"date":     load.StartDate,
+			"timeZone": "America/New_York",
+		},
+		"endDate": map[string]any{
+			"date":     load.EndDate,
+			"timeZone": "America/New_York",
+		},
+		"lane": map[string]any{
+			"start": load.Lane.Origin,
+			"end":   load.Lane.Destination,
+		},
 		"status": map[string]any{
 			"code": map[string]any{
 				"value": load.Status,
+				"key":   "2102",
 			},
 		},
-	}
-
-	if load.Customer.Name != "" {
-		payload["customerOrder"] = []map[string]any{
+		"customerOrder": []map[string]any{
 			{"customer": map[string]any{"name": load.Customer.Name}},
-		}
+		},
 	}
 
 	if load.Carrier.Name != "" {

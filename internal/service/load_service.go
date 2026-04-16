@@ -73,13 +73,26 @@ func toResponse(l model.Load) dto.LoadResponse {
 }
 
 func toModel(req dto.CreateLoadRequest) model.Load {
+	pickup := stopPartyFromDTO(req.Pickup)
+	consignee := stopPartyFromDTO(req.Consignee)
+
 	return model.Load{
-		FreightLoadID:  req.FreightLoadID,
-		Status:         req.Status,
+		FreightLoadID: req.FreightLoadID,
+		Status:        req.Status,
+		// LtlShipment defaults to false (full truckload) unless Turvo derives otherwise.
+		LtlShipment: false,
+		// StartDate is when the load is ready for pickup; EndDate is the delivery appointment.
+		StartDate: pickup.ReadyTime,
+		EndDate:   consignee.ApptTime,
+		// Lane is derived from pickup and consignee locations in "city, state" format.
+		Lane: model.Lane{
+			Origin:      formatLaneStop(pickup.City, pickup.State),
+			Destination: formatLaneStop(consignee.City, consignee.State),
+		},
 		Customer:       partyFromDTO(req.Customer),
 		BillTo:         partyFromDTO(req.BillTo),
-		Pickup:         stopPartyFromDTO(req.Pickup),
-		Consignee:      stopPartyFromDTO(req.Consignee),
+		Pickup:         pickup,
+		Consignee:      consignee,
 		Carrier:        carrierFromDTO(req.Carrier),
 		RateData:       rateDataFromDTO(req.RateData),
 		Specifications: specificationsFromDTO(req.Specifications),
@@ -92,6 +105,18 @@ func toModel(req dto.CreateLoadRequest) model.Load {
 		Operator:       req.Operator,
 		RouteMiles:     req.RouteMiles,
 	}
+}
+
+// formatLaneStop formats a city and state as "city, state" for Turvo's lane field.
+// Returns just the city if state is empty, or an empty string if both are empty.
+func formatLaneStop(city, state string) string {
+	if city == "" {
+		return state
+	}
+	if state == "" {
+		return city
+	}
+	return city + ", " + state
 }
 
 func partyToDTO(p model.Party) dto.PartyDTO {

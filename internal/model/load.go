@@ -2,6 +2,12 @@ package model
 
 import "time"
 
+// Lane represents the origin-destination pair for a freight lane.
+type Lane struct {
+	Origin      string
+	Destination string
+}
+
 // Load is the internal domain entity representing a freight load.
 // It is the canonical shape used across service and repository layers.
 // No JSON tags — this is not a wire type.
@@ -9,6 +15,10 @@ type Load struct {
 	ExternalTMSLoadID string
 	FreightLoadID     string
 	Status            string
+	LtlShipment       bool
+	StartDate         time.Time
+	EndDate           time.Time
+	Lane              Lane
 	Customer          Party
 	BillTo            Party
 	Pickup            StopParty
