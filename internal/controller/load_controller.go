@@ -22,8 +22,8 @@ func NewLoadController(svc *service.LoadService) *LoadController {
 
 // RegisterRoutes attaches the controller's handlers to the provided router group.
 func (c *LoadController) RegisterRoutes(rg *gin.RouterGroup) {
-	rg.GET("", c.GetAll)
-	rg.POST("", c.Create)
+	rg.GET("/loads", c.GetAll)
+	rg.POST("/integrations/webhooks/loads", c.Create)
 }
 
 // GetAll handles GET /loads.
@@ -37,7 +37,7 @@ func (c *LoadController) GetAll(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, loads)
 }
 
-// Create handles POST /loads.
+// Create handles POST /integrations/webhooks/loads.
 // Binds the JSON body to CreateLoadRequest (binding tags enforce required fields),
 // returns 400 on malformed/missing input, 201 on success, 500 on service error.
 func (c *LoadController) Create(ctx *gin.Context) {
