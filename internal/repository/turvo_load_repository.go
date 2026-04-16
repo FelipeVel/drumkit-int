@@ -195,7 +195,7 @@ func NewTurvoLoadRepository(cfg *config.Config, client *http.Client) *TurvoLoadR
 
 // GetAll fetches all loads from Turvo and maps them to the internal model.
 func (r *TurvoLoadRepository) GetAll() ([]model.Load, error) {
-	url := r.cfg.TurvoBaseURL + "/shipments"
+	url := r.cfg.TurvoBaseURL + "/shipments/list"
 
 	body, statusCode, err := r.doRequest(http.MethodGet, url, nil)
 	if err != nil {
