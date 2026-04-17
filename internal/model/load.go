@@ -18,7 +18,6 @@ type Load struct {
 	LtlShipment       bool
 	StartDate         time.Time
 	EndDate           time.Time
-	Lane              Lane
 	Customer          Party
 	BillTo            Party
 	Pickup            StopParty

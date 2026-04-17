@@ -32,22 +32,22 @@ type StopPartyDTO struct {
 
 // CarrierDTO is the wire representation of carrier and driver information.
 type CarrierDTO struct {
-	McNumber                 string    `json:"mcNumber,omitempty"`
-	DotNumber                string    `json:"dotNumber,omitempty"`
-	Name                     string    `json:"name,omitempty"`
-	Phone                    string    `json:"phone,omitempty"`
-	Dispatcher               string    `json:"dispatcher,omitempty"`
-	SealNumber               string    `json:"sealNumber,omitempty"`
-	Scac                     string    `json:"scac,omitempty"`
-	FirstDriverName          string    `json:"firstDriverName,omitempty"`
-	FirstDriverPhone         string    `json:"firstDriverPhone,omitempty"`
-	SecondDriverName         string    `json:"secondDriverName,omitempty"`
-	SecondDriverPhone        string    `json:"secondDriverPhone,omitempty"`
-	Email                    string    `json:"email,omitempty"`
-	DispatchCity             string    `json:"dispatchCity,omitempty"`
-	DispatchState            string    `json:"dispatchState,omitempty"`
-	ExternalTMSTruckId       string    `json:"externalTMSTruckId,omitempty"`
-	ExternalTMSTrailerId     string    `json:"externalTMSTrailerId,omitempty"`
+	McNumber                 string     `json:"mcNumber,omitempty"`
+	DotNumber                string     `json:"dotNumber,omitempty"`
+	Name                     string     `json:"name,omitempty"`
+	Phone                    string     `json:"phone,omitempty"`
+	Dispatcher               string     `json:"dispatcher,omitempty"`
+	SealNumber               string     `json:"sealNumber,omitempty"`
+	Scac                     string     `json:"scac,omitempty"`
+	FirstDriverName          string     `json:"firstDriverName,omitempty"`
+	FirstDriverPhone         string     `json:"firstDriverPhone,omitempty"`
+	SecondDriverName         string     `json:"secondDriverName,omitempty"`
+	SecondDriverPhone        string     `json:"secondDriverPhone,omitempty"`
+	Email                    string     `json:"email,omitempty"`
+	DispatchCity             string     `json:"dispatchCity,omitempty"`
+	DispatchState            string     `json:"dispatchState,omitempty"`
+	ExternalTMSTruckId       string     `json:"externalTMSTruckId,omitempty"`
+	ExternalTMSTrailerId     string     `json:"externalTMSTrailerId,omitempty"`
 	ConfirmationSentTime     *time.Time `json:"confirmationSentTime,omitempty"`
 	ConfirmationReceivedTime *time.Time `json:"confirmationReceivedTime,omitempty"`
 	DispatchedTime           *time.Time `json:"dispatchedTime,omitempty"`
@@ -57,8 +57,8 @@ type CarrierDTO struct {
 	ExpectedDeliveryTime     *time.Time `json:"expectedDeliveryTime,omitempty"`
 	DeliveryStart            *time.Time `json:"deliveryStart,omitempty"`
 	DeliveryEnd              *time.Time `json:"deliveryEnd,omitempty"`
-	SignedBy                 string    `json:"signedBy,omitempty"`
-	ExternalTMSId            string    `json:"externalTMSId,omitempty"`
+	SignedBy                 string     `json:"signedBy,omitempty"`
+	ExternalTMSId            string     `json:"externalTMSId,omitempty"`
 }
 
 // RateDataDTO is the wire representation of financial rate information.
@@ -136,4 +136,8 @@ type LoadResponse struct {
 	PoNums            string            `json:"poNums"`
 	Operator          string            `json:"operator"`
 	RouteMiles        float64           `json:"routeMiles"`
+}
+type CreateLoadResponse struct {
+	Id        int    `json:"id"`
+	CreatedAt string `json:"createdAt"`
 }

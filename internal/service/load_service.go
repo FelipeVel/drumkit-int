@@ -1,6 +1,8 @@
 package service
 
 import (
+	"time"
+
 	"github.com/FelipeVel/drumkit-int/internal/dto"
 	"github.com/FelipeVel/drumkit-int/internal/model"
 	"github.com/FelipeVel/drumkit-int/internal/repository"
@@ -34,15 +36,18 @@ func (s *LoadService) GetAll() ([]dto.LoadResponse, error) {
 
 // Create maps the incoming request DTO to a domain model, persists it via
 // the repository, and returns the created entity as a response DTO.
-func (s *LoadService) Create(req dto.CreateLoadRequest) (dto.LoadResponse, error) {
+func (s *LoadService) Create(req dto.CreateLoadRequest) (dto.CreateLoadResponse, error) {
 	load := toModel(req)
 
 	created, err := s.repo.Create(load)
 	if err != nil {
-		return dto.LoadResponse{}, err
+		return dto.CreateLoadResponse{}, err
 	}
 
-	return toResponse(created), nil
+	return dto.CreateLoadResponse{
+		Id:        created,
+		CreatedAt: time.Now().UTC().Format(time.RFC3339Nano),
+	}, nil
 }
 
 // ---------------------------------------------------------------------------
@@ -82,13 +87,8 @@ func toModel(req dto.CreateLoadRequest) model.Load {
 		// LtlShipment defaults to false (full truckload) unless Turvo derives otherwise.
 		LtlShipment: false,
 		// StartDate is when the load is ready for pickup; EndDate is the delivery appointment.
-		StartDate: pickup.ReadyTime,
-		EndDate:   consignee.ApptTime,
-		// Lane is derived from pickup and consignee locations in "city, state" format.
-		Lane: model.Lane{
-			Origin:      formatLaneStop(pickup.City, pickup.State),
-			Destination: formatLaneStop(consignee.City, consignee.State),
-		},
+		StartDate:      pickup.ReadyTime,
+		EndDate:        consignee.ApptTime,
 		Customer:       partyFromDTO(req.Customer),
 		BillTo:         partyFromDTO(req.BillTo),
 		Pickup:         pickup,

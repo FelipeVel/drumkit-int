@@ -7,5 +7,5 @@ import "github.com/FelipeVel/drumkit-int/internal/model"
 // which makes the external provider swappable without touching business logic.
 type LoadRepository interface {
 	GetAll() ([]model.Load, error)
-	Create(load model.Load) (model.Load, error)
+	Create(load model.Load) (int, error)
 }
