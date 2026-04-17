@@ -135,18 +135,20 @@ func newCreateRequest() dto.CreateLoadRequest {
 	return dto.CreateLoadRequest{
 		FreightLoadID: "FL-999",
 		Status:        "Covered",
-		Customer:      dto.PartyDTO{ExternalTMSId: "77", Name: "Acme Corp", Email: "acme@example.com", Phone: "5550000001"},
+		Customer:      dto.CreateCustomerDTO{ExternalTMSId: "77", Name: "Acme Corp", Email: "acme@example.com", Phone: "5550000001"},
 		BillTo:        dto.PartyDTO{Name: "Acme Billing"},
-		Pickup: dto.StopPartyDTO{
-			PartyDTO:  dto.PartyDTO{City: "Dallas", State: "TX"},
-			ApptTime:  &appt,
-			Timezone:  "America/Chicago",
+		Pickup: dto.CreatePickupDTO{
+			City:        "Dallas",
+			State:       "TX",
+			ReadyTime:   &appt,
+			Timezone:    "America/Chicago",
 			WarehouseId: "WH-01",
 		},
-		Consignee: dto.StopPartyDTO{
-			PartyDTO: dto.PartyDTO{City: "Houston", State: "TX"},
-			ApptTime: &appt,
-			Timezone: "America/Chicago",
+		Consignee: dto.CreateConsigneeDTO{
+			City:        "Houston",
+			State:       "TX",
+			ApptTime:    &appt,
+			Timezone:    "America/Chicago",
 			WarehouseId: "WH-02",
 		},
 		Carrier: dto.CarrierDTO{

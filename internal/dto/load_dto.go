@@ -95,25 +95,90 @@ type SpecificationsDTO struct {
 	Labor             bool    `json:"labor,omitempty"`
 }
 
+// CreateCustomerDTO is the customer sub-object for load creation.
+// Only externalTMSId is required (maps to Turvo customerOrder[0].customer.id).
+type CreateCustomerDTO struct {
+	ExternalTMSId string `json:"externalTMSId" binding:"required"`
+	Name          string `json:"name,omitempty"`
+	AddressLine1  string `json:"addressLine1,omitempty"`
+	AddressLine2  string `json:"addressLine2,omitempty"`
+	City          string `json:"city,omitempty"`
+	State         string `json:"state,omitempty"`
+	Zipcode       string `json:"zipcode,omitempty"`
+	Country       string `json:"country,omitempty"`
+	Contact       string `json:"contact,omitempty"`
+	Phone         string `json:"phone,omitempty"`
+	Email         string `json:"email,omitempty"`
+	RefNumber     string `json:"refNumber,omitempty"`
+}
+
+// CreatePickupDTO is the pickup stop sub-object for load creation.
+// city, state and readyTime are required (map to Turvo lane.start and startDate).
+type CreatePickupDTO struct {
+	ExternalTMSId string     `json:"externalTMSId,omitempty"`
+	Name          string     `json:"name,omitempty"`
+	AddressLine1  string     `json:"addressLine1,omitempty"`
+	AddressLine2  string     `json:"addressLine2,omitempty"`
+	City          string     `json:"city"      binding:"required"`
+	State         string     `json:"state"     binding:"required"`
+	Zipcode       string     `json:"zipcode,omitempty"`
+	Country       string     `json:"country,omitempty"`
+	Contact       string     `json:"contact,omitempty"`
+	Phone         string     `json:"phone,omitempty"`
+	Email         string     `json:"email,omitempty"`
+	RefNumber     string     `json:"refNumber,omitempty"`
+	BusinessHours string     `json:"businessHours,omitempty"`
+	ReadyTime     *time.Time `json:"readyTime"  binding:"required"`
+	ApptTime      *time.Time `json:"apptTime,omitempty"`
+	ApptNote      string     `json:"apptNote,omitempty"`
+	Timezone      string     `json:"timezone,omitempty"`
+	WarehouseId   string     `json:"warehouseId,omitempty"`
+	MustDeliver   string     `json:"mustDeliver,omitempty"`
+}
+
+// CreateConsigneeDTO is the consignee stop sub-object for load creation.
+// city, state and apptTime are required (map to Turvo lane.end and endDate).
+type CreateConsigneeDTO struct {
+	ExternalTMSId string     `json:"externalTMSId,omitempty"`
+	Name          string     `json:"name,omitempty"`
+	AddressLine1  string     `json:"addressLine1,omitempty"`
+	AddressLine2  string     `json:"addressLine2,omitempty"`
+	City          string     `json:"city"      binding:"required"`
+	State         string     `json:"state"     binding:"required"`
+	Zipcode       string     `json:"zipcode,omitempty"`
+	Country       string     `json:"country,omitempty"`
+	Contact       string     `json:"contact,omitempty"`
+	Phone         string     `json:"phone,omitempty"`
+	Email         string     `json:"email,omitempty"`
+	RefNumber     string     `json:"refNumber,omitempty"`
+	BusinessHours string     `json:"businessHours,omitempty"`
+	ReadyTime     *time.Time `json:"readyTime,omitempty"`
+	ApptTime      *time.Time `json:"apptTime"  binding:"required"`
+	ApptNote      string     `json:"apptNote,omitempty"`
+	Timezone      string     `json:"timezone,omitempty"`
+	WarehouseId   string     `json:"warehouseId,omitempty"`
+	MustDeliver   string     `json:"mustDeliver,omitempty"`
+}
+
 // CreateLoadRequest is the JSON body accepted by POST /loads.
 type CreateLoadRequest struct {
-	FreightLoadID  string            `json:"freightLoadID"  binding:"required"`
-	Status         string            `json:"status"         binding:"required"`
-	Customer       PartyDTO          `json:"customer"       binding:"required"`
-	Pickup         StopPartyDTO      `json:"pickup"         binding:"required"`
-	Consignee      StopPartyDTO      `json:"consignee"      binding:"required"`
-	BillTo         PartyDTO          `json:"billTo"`
-	Carrier        CarrierDTO        `json:"carrier"`
-	RateData       RateDataDTO       `json:"rateData"`
-	Specifications SpecificationsDTO `json:"specifications"`
-	InPalletCount  int               `json:"inPalletCount"`
-	OutPalletCount int               `json:"outPalletCount"`
-	NumCommodities int               `json:"numCommodities"`
-	TotalWeight    float64           `json:"totalWeight"`
-	BillableWeight float64           `json:"billableWeight"`
-	PoNums         string            `json:"poNums"`
-	Operator       string            `json:"operator"`
-	RouteMiles     float64           `json:"routeMiles"`
+	FreightLoadID  string             `json:"freightLoadID"`
+	Status         string             `json:"status"`
+	Customer       CreateCustomerDTO  `json:"customer"  binding:"required"`
+	Pickup         CreatePickupDTO    `json:"pickup"    binding:"required"`
+	Consignee      CreateConsigneeDTO `json:"consignee" binding:"required"`
+	BillTo         PartyDTO           `json:"billTo"`
+	Carrier        CarrierDTO         `json:"carrier"`
+	RateData       RateDataDTO        `json:"rateData"`
+	Specifications SpecificationsDTO  `json:"specifications"`
+	InPalletCount  int                `json:"inPalletCount"`
+	OutPalletCount int                `json:"outPalletCount"`
+	NumCommodities int                `json:"numCommodities"`
+	TotalWeight    float64            `json:"totalWeight"`
+	BillableWeight float64            `json:"billableWeight"`
+	PoNums         string             `json:"poNums"`
+	Operator       string             `json:"operator"`
+	RouteMiles     float64            `json:"routeMiles"`
 }
 
 // LoadResponse is the JSON shape returned for both GET /loads items and POST /loads result.

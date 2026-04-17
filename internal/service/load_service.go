@@ -78,18 +78,16 @@ func toResponse(l model.Load) dto.LoadResponse {
 }
 
 func toModel(req dto.CreateLoadRequest) model.Load {
-	pickup := stopPartyFromDTO(req.Pickup)
-	consignee := stopPartyFromDTO(req.Consignee)
+	pickup := pickupFromCreateDTO(req.Pickup)
+	consignee := consigneeFromCreateDTO(req.Consignee)
 
 	return model.Load{
-		FreightLoadID: req.FreightLoadID,
-		Status:        req.Status,
-		// LtlShipment defaults to false (full truckload) unless Turvo derives otherwise.
-		LtlShipment: false,
-		// StartDate is when the load is ready for pickup; EndDate is the delivery appointment.
+		FreightLoadID:  req.FreightLoadID,
+		Status:         req.Status,
+		LtlShipment:    false,
 		StartDate:      pickup.ReadyTime,
 		EndDate:        consignee.ApptTime,
-		Customer:       partyFromDTO(req.Customer),
+		Customer:       customerFromCreateDTO(req.Customer),
 		BillTo:         partyFromDTO(req.BillTo),
 		Pickup:         pickup,
 		Consignee:      consignee,
@@ -105,6 +103,85 @@ func toModel(req dto.CreateLoadRequest) model.Load {
 		Operator:       req.Operator,
 		RouteMiles:     req.RouteMiles,
 	}
+}
+
+func customerFromCreateDTO(d dto.CreateCustomerDTO) model.Party {
+	return model.Party{
+		ExternalTMSId: d.ExternalTMSId,
+		Name:          d.Name,
+		AddressLine1:  d.AddressLine1,
+		AddressLine2:  d.AddressLine2,
+		City:          d.City,
+		State:         d.State,
+		Zipcode:       d.Zipcode,
+		Country:       d.Country,
+		Contact:       d.Contact,
+		Phone:         d.Phone,
+		Email:         d.Email,
+		RefNumber:     d.RefNumber,
+	}
+}
+
+func pickupFromCreateDTO(d dto.CreatePickupDTO) model.StopParty {
+	sp := model.StopParty{
+		Party: model.Party{
+			ExternalTMSId: d.ExternalTMSId,
+			Name:          d.Name,
+			AddressLine1:  d.AddressLine1,
+			AddressLine2:  d.AddressLine2,
+			City:          d.City,
+			State:         d.State,
+			Zipcode:       d.Zipcode,
+			Country:       d.Country,
+			Contact:       d.Contact,
+			Phone:         d.Phone,
+			Email:         d.Email,
+			RefNumber:     d.RefNumber,
+		},
+		BusinessHours: d.BusinessHours,
+		ApptNote:      d.ApptNote,
+		Timezone:      d.Timezone,
+		WarehouseID:   d.WarehouseId,
+		MustDeliver:   d.MustDeliver,
+	}
+	if d.ReadyTime != nil {
+		sp.ReadyTime = *d.ReadyTime
+	}
+	if d.ApptTime != nil {
+		sp.ApptTime = *d.ApptTime
+	}
+	return sp
+}
+
+func consigneeFromCreateDTO(d dto.CreateConsigneeDTO) model.StopParty {
+	sp := model.StopParty{
+		Party: model.Party{
+			ExternalTMSId: d.ExternalTMSId,
+			Name:          d.Name,
+			AddressLine1:  d.AddressLine1,
+			AddressLine2:  d.AddressLine2,
+			City:          d.City,
+			State:         d.State,
+			Zipcode:       d.Zipcode,
+			Country:       d.Country,
+			Contact:       d.Contact,
+			Phone:         d.Phone,
+			Email:         d.Email,
+			RefNumber:     d.RefNumber,
+		},
+		BusinessHours: d.BusinessHours,
+		ApptNote:      d.ApptNote,
+		Timezone:      d.Timezone,
+		WarehouseID:   d.WarehouseId,
+		MustDeliver:   d.MustDeliver,
+	}
+	if d.ReadyTime != nil {
+		sp.ReadyTime = *d.ReadyTime
+	}
+	if d.ApptTime != nil {
+		sp.ApptTime = *d.ApptTime
+	}
+	return sp
 }
 
 // formatLaneStop formats a city and state as "city, state" for Turvo's lane field.
