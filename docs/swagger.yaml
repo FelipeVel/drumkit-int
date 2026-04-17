@@ -1,0 +1,341 @@
+basePath: /v1
+definitions:
+  dto.CarrierDTO:
+    properties:
+      confirmationReceivedTime:
+        type: string
+      confirmationSentTime:
+        type: string
+      deliveryEnd:
+        type: string
+      deliveryStart:
+        type: string
+      dispatchCity:
+        type: string
+      dispatchState:
+        type: string
+      dispatchedTime:
+        type: string
+      dispatcher:
+        type: string
+      dotNumber:
+        type: string
+      email:
+        type: string
+      expectedDeliveryTime:
+        type: string
+      expectedPickupTime:
+        type: string
+      externalTMSId:
+        type: string
+      externalTMSTrailerId:
+        type: string
+      externalTMSTruckId:
+        type: string
+      firstDriverName:
+        type: string
+      firstDriverPhone:
+        type: string
+      mcNumber:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      pickupEnd:
+        type: string
+      pickupStart:
+        type: string
+      scac:
+        type: string
+      sealNumber:
+        type: string
+      secondDriverName:
+        type: string
+      secondDriverPhone:
+        type: string
+      signedBy:
+        type: string
+    type: object
+  dto.CreateLoadRequest:
+    properties:
+      billTo:
+        $ref: '#/definitions/dto.PartyDTO'
+      billableWeight:
+        type: number
+      carrier:
+        $ref: '#/definitions/dto.CarrierDTO'
+      consignee:
+        $ref: '#/definitions/dto.StopPartyDTO'
+      customer:
+        $ref: '#/definitions/dto.PartyDTO'
+      freightLoadID:
+        type: string
+      inPalletCount:
+        type: integer
+      numCommodities:
+        type: integer
+      operator:
+        type: string
+      outPalletCount:
+        type: integer
+      pickup:
+        $ref: '#/definitions/dto.StopPartyDTO'
+      poNums:
+        type: string
+      rateData:
+        $ref: '#/definitions/dto.RateDataDTO'
+      routeMiles:
+        type: number
+      specifications:
+        $ref: '#/definitions/dto.SpecificationsDTO'
+      status:
+        type: string
+      totalWeight:
+        type: number
+    required:
+    - consignee
+    - customer
+    - freightLoadID
+    - pickup
+    - status
+    type: object
+  dto.CreateLoadResponse:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+    type: object
+  dto.LoadResponse:
+    properties:
+      billTo:
+        $ref: '#/definitions/dto.PartyDTO'
+      billableWeight:
+        type: number
+      carrier:
+        $ref: '#/definitions/dto.CarrierDTO'
+      consignee:
+        $ref: '#/definitions/dto.StopPartyDTO'
+      customer:
+        $ref: '#/definitions/dto.PartyDTO'
+      externalTMSLoadID:
+        type: string
+      freightLoadID:
+        type: string
+      inPalletCount:
+        type: integer
+      numCommodities:
+        type: integer
+      operator:
+        type: string
+      outPalletCount:
+        type: integer
+      pickup:
+        $ref: '#/definitions/dto.StopPartyDTO'
+      poNums:
+        type: string
+      rateData:
+        $ref: '#/definitions/dto.RateDataDTO'
+      routeMiles:
+        type: number
+      specifications:
+        $ref: '#/definitions/dto.SpecificationsDTO'
+      status:
+        type: string
+      totalWeight:
+        type: number
+    type: object
+  dto.PartyDTO:
+    properties:
+      addressLine1:
+        type: string
+      addressLine2:
+        type: string
+      city:
+        type: string
+      contact:
+        type: string
+      country:
+        type: string
+      email:
+        type: string
+      externalTMSId:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      refNumber:
+        type: string
+      state:
+        type: string
+      zipcode:
+        type: string
+    type: object
+  dto.RateDataDTO:
+    properties:
+      carrierLhRateUsd:
+        type: number
+      carrierMaxRate:
+        type: number
+      carrierNumHours:
+        type: number
+      carrierRateType:
+        type: string
+      customerLhRateUsd:
+        type: number
+      customerNumHours:
+        type: number
+      customerRateType:
+        type: string
+      fscPerMile:
+        type: number
+      fscPercent:
+        type: number
+      netProfitUsd:
+        type: number
+      profitPercent:
+        type: number
+    type: object
+  dto.SpecificationsDTO:
+    properties:
+      customBonded:
+        type: boolean
+      escorts:
+        type: boolean
+      hazmat:
+        type: boolean
+      insideDelivery:
+        type: boolean
+      insidePickup:
+        type: boolean
+      labor:
+        type: boolean
+      liftgateDelivery:
+        type: boolean
+      liftgatePickup:
+        type: boolean
+      maxTempFahrenheit:
+        type: number
+      minTempFahrenheit:
+        type: number
+      oversized:
+        type: boolean
+      permits:
+        type: boolean
+      seal:
+        type: boolean
+      straps:
+        type: boolean
+      tarps:
+        type: boolean
+    type: object
+  dto.StopPartyDTO:
+    properties:
+      addressLine1:
+        type: string
+      addressLine2:
+        type: string
+      apptNote:
+        type: string
+      apptTime:
+        type: string
+      businessHours:
+        type: string
+      city:
+        type: string
+      contact:
+        type: string
+      country:
+        type: string
+      email:
+        type: string
+      externalTMSId:
+        type: string
+      mustDeliver:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      readyTime:
+        type: string
+      refNumber:
+        type: string
+      state:
+        type: string
+      timezone:
+        type: string
+      warehouseId:
+        type: string
+      zipcode:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: TMS integration service — proxies freight load operations to the Turvo
+    external API.
+  title: Drumkit Integration API
+  version: "1.0"
+paths:
+  /integrations/webhooks/loads:
+    post:
+      consumes:
+      - application/json
+      description: Receives a freight load payload and creates it in Turvo.
+      parameters:
+      - description: Load payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateLoadRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.CreateLoadResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a load via webhook
+      tags:
+      - loads
+  /loads:
+    get:
+      description: Returns all freight loads synced from Turvo.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.LoadResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List all loads
+      tags:
+      - loads
+schemes:
+- http
+- https
+swagger: "2.0"

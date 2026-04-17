@@ -27,7 +27,14 @@ func (c *LoadController) RegisterRoutes(rg *gin.RouterGroup) {
 }
 
 // GetAll handles GET /loads.
-// Returns 200 with the list of loads, or 500 on service/repository error.
+//
+// @Summary      List all loads
+// @Description  Returns all freight loads synced from Turvo.
+// @Tags         loads
+// @Produce      json
+// @Success      200  {array}   dto.LoadResponse
+// @Failure      500  {object}  map[string]string
+// @Router       /loads [get]
 func (c *LoadController) GetAll(ctx *gin.Context) {
 	loads, err := c.svc.GetAll()
 	if err != nil {
@@ -38,8 +45,17 @@ func (c *LoadController) GetAll(ctx *gin.Context) {
 }
 
 // Create handles POST /integrations/webhooks/loads.
-// Binds the JSON body to CreateLoadRequest (binding tags enforce required fields),
-// returns 400 on malformed/missing input, 201 on success, 500 on service error.
+//
+// @Summary      Create a load via webhook
+// @Description  Receives a freight load payload and creates it in Turvo.
+// @Tags         loads
+// @Accept       json
+// @Produce      json
+// @Param        body  body      dto.CreateLoadRequest  true  "Load payload"
+// @Success      201   {object}  dto.CreateLoadResponse
+// @Failure      400   {object}  map[string]string
+// @Failure      500   {object}  map[string]string
+// @Router       /integrations/webhooks/loads [post]
 func (c *LoadController) Create(ctx *gin.Context) {
 	var req dto.CreateLoadRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
