@@ -187,67 +187,95 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.CreateCustomerDTO": {
+            "type": "object",
+            "required": ["externalTMSId"],
+            "properties": {
+                "externalTMSId": { "type": "string" },
+                "name":          { "type": "string" },
+                "addressLine1":  { "type": "string" },
+                "addressLine2":  { "type": "string" },
+                "city":          { "type": "string" },
+                "state":         { "type": "string" },
+                "zipcode":       { "type": "string" },
+                "country":       { "type": "string" },
+                "contact":       { "type": "string" },
+                "phone":         { "type": "string" },
+                "email":         { "type": "string" },
+                "refNumber":     { "type": "string" }
+            }
+        },
+        "dto.CreatePickupDTO": {
+            "type": "object",
+            "required": ["city", "state", "readyTime"],
+            "properties": {
+                "externalTMSId": { "type": "string" },
+                "name":          { "type": "string" },
+                "addressLine1":  { "type": "string" },
+                "addressLine2":  { "type": "string" },
+                "city":          { "type": "string" },
+                "state":         { "type": "string" },
+                "zipcode":       { "type": "string" },
+                "country":       { "type": "string" },
+                "contact":       { "type": "string" },
+                "phone":         { "type": "string" },
+                "email":         { "type": "string" },
+                "refNumber":     { "type": "string" },
+                "businessHours": { "type": "string" },
+                "readyTime":     { "type": "string" },
+                "apptTime":      { "type": "string" },
+                "apptNote":      { "type": "string" },
+                "timezone":      { "type": "string" },
+                "warehouseId":   { "type": "string" },
+                "mustDeliver":   { "type": "string" }
+            }
+        },
+        "dto.CreateConsigneeDTO": {
+            "type": "object",
+            "required": ["city", "state", "apptTime"],
+            "properties": {
+                "externalTMSId": { "type": "string" },
+                "name":          { "type": "string" },
+                "addressLine1":  { "type": "string" },
+                "addressLine2":  { "type": "string" },
+                "city":          { "type": "string" },
+                "state":         { "type": "string" },
+                "zipcode":       { "type": "string" },
+                "country":       { "type": "string" },
+                "contact":       { "type": "string" },
+                "phone":         { "type": "string" },
+                "email":         { "type": "string" },
+                "refNumber":     { "type": "string" },
+                "businessHours": { "type": "string" },
+                "readyTime":     { "type": "string" },
+                "apptTime":      { "type": "string" },
+                "apptNote":      { "type": "string" },
+                "timezone":      { "type": "string" },
+                "warehouseId":   { "type": "string" },
+                "mustDeliver":   { "type": "string" }
+            }
+        },
         "dto.CreateLoadRequest": {
             "type": "object",
-            "required": [
-                "consignee",
-                "customer",
-                "freightLoadID",
-                "pickup",
-                "status"
-            ],
+            "required": ["customer", "pickup", "consignee"],
             "properties": {
-                "billTo": {
-                    "$ref": "#/definitions/dto.PartyDTO"
-                },
-                "billableWeight": {
-                    "type": "number"
-                },
-                "carrier": {
-                    "$ref": "#/definitions/dto.CarrierDTO"
-                },
-                "consignee": {
-                    "$ref": "#/definitions/dto.StopPartyDTO"
-                },
-                "customer": {
-                    "$ref": "#/definitions/dto.PartyDTO"
-                },
-                "freightLoadID": {
-                    "type": "string"
-                },
-                "inPalletCount": {
-                    "type": "integer"
-                },
-                "numCommodities": {
-                    "type": "integer"
-                },
-                "operator": {
-                    "type": "string"
-                },
-                "outPalletCount": {
-                    "type": "integer"
-                },
-                "pickup": {
-                    "$ref": "#/definitions/dto.StopPartyDTO"
-                },
-                "poNums": {
-                    "type": "string"
-                },
-                "rateData": {
-                    "$ref": "#/definitions/dto.RateDataDTO"
-                },
-                "routeMiles": {
-                    "type": "number"
-                },
-                "specifications": {
-                    "$ref": "#/definitions/dto.SpecificationsDTO"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "totalWeight": {
-                    "type": "number"
-                }
+                "freightLoadID":  { "type": "string" },
+                "status":         { "type": "string" },
+                "customer":       { "$ref": "#/definitions/dto.CreateCustomerDTO" },
+                "pickup":         { "$ref": "#/definitions/dto.CreatePickupDTO" },
+                "consignee":      { "$ref": "#/definitions/dto.CreateConsigneeDTO" },
+                "billTo":         { "$ref": "#/definitions/dto.PartyDTO" },
+                "carrier":        { "$ref": "#/definitions/dto.CarrierDTO" },
+                "rateData":       { "$ref": "#/definitions/dto.RateDataDTO" },
+                "specifications": { "$ref": "#/definitions/dto.SpecificationsDTO" },
+                "billableWeight": { "type": "number" },
+                "inPalletCount":  { "type": "integer" },
+                "numCommodities": { "type": "integer" },
+                "operator":       { "type": "string" },
+                "outPalletCount": { "type": "integer" },
+                "poNums":         { "type": "string" },
+                "routeMiles":     { "type": "number" },
+                "totalWeight":    { "type": "number" }
             }
         },
         "dto.CreateLoadResponse": {
