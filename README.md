@@ -1,6 +1,8 @@
 # Drumkit Integration API
 
-A stateless Go microservice that acts as a translation layer between an internal freight TMS and the [Turvo](https://turvo.com) external TMS API. It exposes a clean, domain-focused REST API so upstream systems never have to speak Turvo's data model directly. You can also test it through the [Postman Collection](https://drive.google.com/file/d/1bb-XwBL_Ptagb7KPktW9diiF5OuM3FFj/view?usp=sharing)
+A stateless Go microservice that acts as a translation layer between an internal freight TMS and the [Turvo](https://turvo.com) external TMS API. It exposes a clean, domain-focused REST API so upstream systems never have to speak Turvo's data model directly. You can also test it through the [Postman Collection](https://drive.google.com/file/d/1bb-XwBL_Ptagb7KPktW9diiF5OuM3FFj/view?usp=sharing).
+
+This repository is the back-end part, you can also visit the [Front-end repository](https://github.com/FelipeVel/drumkit-client).
 
 ---
 
