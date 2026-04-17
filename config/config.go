@@ -9,14 +9,15 @@ import (
 
 // Config holds all environment-driven configuration for the service.
 type Config struct {
-	ServerPort        string
-	TurvoBaseURL      string
-	TurvoAPIKey       string
-	TurvoClientID     string
-	TurvoClientSecret string
-	TurvoUsername     string
-	TurvoPassword     string
-	HTTPTimeoutSec    int
+	ServerPort          string
+	TurvoBaseURL        string
+	TurvoAPIKey         string
+	TurvoClientID       string
+	TurvoClientSecret   string
+	TurvoUsername       string
+	TurvoPassword       string
+	HTTPTimeoutSec      int
+	CORSAllowedOrigins  string
 }
 
 // Load reads configuration from a .env file (if present) and then from
@@ -26,14 +27,15 @@ func Load() *Config {
 	_ = godotenv.Load()
 
 	return &Config{
-		ServerPort:        getEnv("SERVER_PORT", ":8080"),
-		TurvoBaseURL:      getEnv("TURVO_BASE_URL", ""),
-		TurvoAPIKey:       getEnv("TURVO_API_KEY", ""),
-		TurvoClientID:     getEnv("TURVO_CLIENT_ID", ""),
-		TurvoClientSecret: getEnv("TURVO_CLIENT_SECRET", ""),
-		TurvoUsername:     getEnv("TURVO_USERNAME", ""),
-		TurvoPassword:     getEnv("TURVO_PASSWORD", ""),
-		HTTPTimeoutSec:    getEnvInt("HTTP_TIMEOUT_SEC", 10),
+		ServerPort:         getEnv("SERVER_PORT", ":8080"),
+		TurvoBaseURL:       getEnv("TURVO_BASE_URL", ""),
+		TurvoAPIKey:        getEnv("TURVO_API_KEY", ""),
+		TurvoClientID:      getEnv("TURVO_CLIENT_ID", ""),
+		TurvoClientSecret:  getEnv("TURVO_CLIENT_SECRET", ""),
+		TurvoUsername:      getEnv("TURVO_USERNAME", ""),
+		TurvoPassword:      getEnv("TURVO_PASSWORD", ""),
+		HTTPTimeoutSec:     getEnvInt("HTTP_TIMEOUT_SEC", 10),
+		CORSAllowedOrigins: getEnv("CORS_ALLOWED_ORIGINS", "*"),
 	}
 }
 

@@ -39,6 +39,7 @@ func main() {
 	// 4. Set up Gin with our own structured logger (no default Gin logger).
 	router := gin.New()
 	router.Use(gin.Recovery())
+	router.Use(middleware.CORS(cfg.CORSAllowedOrigins))
 	router.Use(middleware.RequestLogger())
 
 	// 5. Register routes under /v1.
