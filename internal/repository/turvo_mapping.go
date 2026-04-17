@@ -68,6 +68,102 @@ func turvoLoadDetailsToModel(tl turvoLoadDetails) model.Load {
 	return load
 }
 
+// turvoShipmentToModel maps a full Turvo shipment detail to the internal model.
+// This is the inverse of modelToTurvoPayload and provides richer data than turvoToModel:
+// it includes pickup/delivery addresses and carrier driver details.
+func turvoShipmentToModel(ts turvoShipment) model.Load {
+	load := model.Load{
+		ExternalTMSLoadID: fmt.Sprintf("%d", ts.ID),
+		FreightLoadID:     ts.CustomID,
+		Status:            ts.Status.Code.Value,
+		LtlShipment:       ts.LtlShipment,
+		StartDate:         ts.StartDate.Date,
+		EndDate:           ts.EndDate.Date,
+	}
+
+	if len(ts.CustomerOrder) > 0 && !ts.CustomerOrder[0].Deleted {
+		co := ts.CustomerOrder[0]
+		load.Customer = model.Party{
+			ExternalTMSId: fmt.Sprintf("%d", co.Customer.ID),
+			Name:          co.Customer.Name,
+		}
+		bt := co.FreightTerms.BillTo
+		load.BillTo = model.Party{
+			ExternalTMSId: bt.ID,
+			Name:          bt.Name,
+			AddressLine1:  bt.Address.Line1,
+			City:          bt.Address.City.Name,
+			State:         bt.Address.State.Name,
+			Zipcode:       bt.Address.Zip,
+			Country:       bt.Address.Country.Name,
+			Phone:         bt.Phone,
+			Contact:       bt.Contact,
+		}
+		for _, route := range co.Route {
+			if route.Deleted {
+				continue
+			}
+			stop := model.StopParty{
+				Party: model.Party{
+					AddressLine1: route.Address.Line1,
+					AddressLine2: route.Address.Line2,
+					City:         route.Address.City,
+					State:        route.Address.State,
+					Zipcode:      route.Address.Zip,
+					Country:      route.Address.Country,
+				},
+				Timezone:    route.Timezone,
+				WarehouseID: fmt.Sprintf("%d", route.Location.ID),
+				ApptTime:    route.Appointment.Start,
+			}
+			switch route.StopType.Value {
+			case "Pickup":
+				load.Pickup = stop
+			case "Delivery":
+				load.Consignee = stop
+			}
+		}
+	}
+
+	for _, co := range ts.CarrierOrder {
+		if co.Deleted {
+			continue
+		}
+		load.Carrier = model.CarrierInfo{
+			ExternalTMSId: fmt.Sprintf("%d", co.Carrier.ID),
+			Name:          co.Carrier.Name,
+		}
+		driverIdx := 0
+		for _, d := range co.Drivers {
+			if d.Deleted {
+				continue
+			}
+			if driverIdx == 0 {
+				load.Carrier.FirstDriverName = d.Context.Name
+				load.Carrier.FirstDriverPhone = d.Phone.Number
+			} else if driverIdx == 1 {
+				load.Carrier.SecondDriverName = d.Context.Name
+				load.Carrier.SecondDriverPhone = d.Phone.Number
+			}
+			driverIdx++
+		}
+		for _, ext := range co.ExternalIds {
+			if ext.Deleted {
+				continue
+			}
+			switch ext.Type.Key {
+			case "7605":
+				load.Carrier.ExternalTMSTruckID = ext.Value
+			case "7606":
+				load.Carrier.ExternalTMSTrailerID = ext.Value
+			}
+		}
+		break
+	}
+
+	return load
+}
+
 // turvoCustomerToModel maps a Turvo customer details response to the internal domain model.
 func turvoCustomerToModel(tc turvoCustomerDetails) model.Customer {
 	c := model.Customer{

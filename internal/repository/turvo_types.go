@@ -202,6 +202,112 @@ type turvoLoadsResponse struct {
 	} `json:"pagination"`
 }
 
+// ---------------------------------------------------------------------------
+// Turvo single-shipment response shapes (GET /shipments/:id)
+// ---------------------------------------------------------------------------
+
+type turvoShipmentRouteAddress struct {
+	Line1   string `json:"line1"`
+	Line2   string `json:"line2"`
+	City    string `json:"city"`
+	State   string `json:"state"`
+	Zip     string `json:"zip"`
+	Country string `json:"country"`
+}
+
+type turvoShipmentRouteAppointment struct {
+	Start    time.Time `json:"start"`
+	TimeZone string    `json:"timeZone"`
+}
+
+type turvoShipmentRouteLocation struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
+type turvoShipmentRoute struct {
+	StopType    turvoKeyValue                  `json:"stopType"`
+	Location    turvoShipmentRouteLocation     `json:"location"`
+	Address     turvoShipmentRouteAddress      `json:"address"`
+	Timezone    string                         `json:"timezone"`
+	Appointment turvoShipmentRouteAppointment  `json:"appointment"`
+	Deleted     bool                           `json:"deleted"`
+}
+
+type turvoShipmentDriverPhone struct {
+	Number string `json:"number"`
+}
+
+type turvoShipmentDriverContext struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
+type turvoShipmentDriver struct {
+	Context turvoShipmentDriverContext `json:"context"`
+	Phone   turvoShipmentDriverPhone   `json:"phone"`
+	Deleted bool                       `json:"deleted"`
+}
+
+type turvoShipmentExternalID struct {
+	Type    turvoKeyValue `json:"type"`
+	Value   string        `json:"value"`
+	Deleted bool          `json:"deleted"`
+}
+
+type turvoShipmentBillToAddress struct {
+	Line1   string `json:"line1"`
+	City    struct{ Name string `json:"name"` } `json:"city"`
+	State   struct{ Name string `json:"name"` } `json:"state"`
+	Country struct{ Name string `json:"name"` } `json:"country"`
+	Zip     string `json:"zip"`
+}
+
+type turvoShipmentBillTo struct {
+	ID      string                      `json:"id"`
+	Name    string                      `json:"billTo"`
+	Address turvoShipmentBillToAddress  `json:"address"`
+	Phone   string                      `json:"phone"`
+	Contact string                      `json:"contact"`
+}
+
+type turvoShipmentFreightTerms struct {
+	BillTo turvoShipmentBillTo `json:"billTo"`
+}
+
+type turvoShipmentCustomerOrder struct {
+	ID      int `json:"id"`
+	Customer struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+	} `json:"customer"`
+	FreightTerms turvoShipmentFreightTerms `json:"freightTerms"`
+	Route        []turvoShipmentRoute      `json:"route"`
+	Deleted      bool                      `json:"deleted"`
+}
+
+type turvoShipmentCarrierOrder struct {
+	ID      int `json:"id"`
+	Carrier struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+	} `json:"carrier"`
+	Drivers     []turvoShipmentDriver    `json:"drivers"`
+	ExternalIds []turvoShipmentExternalID `json:"externalIds"`
+	Deleted     bool                     `json:"deleted"`
+}
+
+type turvoShipment struct {
+	ID            int                          `json:"id"`
+	CustomID      string                       `json:"customId"`
+	LtlShipment   bool                         `json:"ltlShipment"`
+	StartDate     turvoShipmentDate            `json:"startDate"`
+	EndDate       turvoShipmentDate            `json:"endDate"`
+	Status        turvoStatus                  `json:"status"`
+	CustomerOrder []turvoShipmentCustomerOrder `json:"customerOrder"`
+	CarrierOrder  []turvoShipmentCarrierOrder  `json:"carrierOrder"`
+}
+
 // turvoCustomerDetails is the shape of the `details` field in the customer response.
 type turvoCustomerDetails struct {
 	ID            int                           `json:"id"`

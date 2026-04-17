@@ -62,12 +62,78 @@ func (r *TurvoLoadRepository) GetAll() ([]model.Load, error) {
 		loads[i] = turvoToModel(tl)
 	}
 
+	if err := r.enrichShipments(loads); err != nil {
+		return nil, err
+	}
+
 	if err := r.enrichCustomers(loads); err != nil {
 		return nil, err
 	}
-	fmt.Println(loads[0])
 
 	return loads, nil
+}
+
+// GetShipment fetches a single shipment by ID from Turvo and maps it to the internal model.
+func (r *TurvoLoadRepository) GetShipment(id int) (model.Load, error) {
+	url := fmt.Sprintf("%s/shipments/%d", r.cfg.TurvoBaseURL, id)
+
+	body, statusCode, err := r.doRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return model.Load{}, err
+	}
+	if statusCode != http.StatusOK {
+		return model.Load{}, fmt.Errorf("turvo GetShipment: unexpected status %d: %s", statusCode, body)
+	}
+
+	var response turvoAPIResponse[turvoShipment]
+	if err := json.Unmarshal(body, &response); err != nil {
+		return model.Load{}, fmt.Errorf("turvo GetShipment: decode response: %w", err)
+	}
+
+	return turvoShipmentToModel(response.Details), nil
+}
+
+// enrichShipments replaces each load's basic data with the full shipment detail
+// by calling GetShipment concurrently for every load that has an ExternalTMSLoadID.
+func (r *TurvoLoadRepository) enrichShipments(loads []model.Load) error {
+	type result struct {
+		idx  int
+		load model.Load
+		err  error
+	}
+
+	resultc := make(chan result, len(loads))
+	var wg sync.WaitGroup
+
+	for i, load := range loads {
+		if load.ExternalTMSLoadID == "" {
+			continue
+		}
+		id, err := strconv.Atoi(load.ExternalTMSLoadID)
+		if err != nil {
+			continue
+		}
+		wg.Add(1)
+		go func(i, id int) {
+			defer wg.Done()
+			l, err := r.GetShipment(id)
+			resultc <- result{idx: i, load: l, err: err}
+		}(i, id)
+	}
+
+	go func() {
+		wg.Wait()
+		close(resultc)
+	}()
+
+	for res := range resultc {
+		if res.err != nil {
+			return fmt.Errorf("turvo GetAll: enrich shipment: %w", res.err)
+		}
+		loads[res.idx] = res.load
+	}
+
+	return nil
 }
 
 // enrichCustomers fetches full customer details concurrently for each load that
