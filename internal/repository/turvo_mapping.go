@@ -68,6 +68,44 @@ func turvoLoadDetailsToModel(tl turvoLoadDetails) model.Load {
 	return load
 }
 
+// turvoCustomerToModel maps a Turvo customer details response to the internal domain model.
+func turvoCustomerToModel(tc turvoCustomerDetails) model.Customer {
+	c := model.Customer{
+		ExternalTMSId: fmt.Sprintf("%d", tc.ID),
+		Name:          tc.Name,
+	}
+
+	for _, a := range tc.Address {
+		if a.IsPrimary && !a.Deleted {
+			c.AddressLine1 = a.Line1
+			c.AddressLine2 = a.Line2
+			c.City = a.City
+			c.State = a.State
+			c.Zipcode = a.Zip
+			c.Country = a.Country
+			break
+		}
+	}
+
+	for _, e := range tc.Email {
+		if e.IsPrimary && !e.Deleted {
+			c.Email = e.Email
+			break
+		}
+	}
+
+	for _, p := range tc.Phone {
+		if p.IsPrimary && !p.Deleted {
+			c.Phone = p.Number
+			break
+		}
+	}
+
+	c.Contact = tc.Contact.Name
+
+	return c
+}
+
 // modelToTurvoPayload converts an internal Load to the JSON payload shape
 // expected by Turvo's shipment creation endpoint.
 func modelToTurvoPayload(load model.Load) map[string]any {

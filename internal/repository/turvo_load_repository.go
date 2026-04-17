@@ -7,7 +7,9 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/FelipeVel/drumkit-int/config"
@@ -55,13 +57,93 @@ func (r *TurvoLoadRepository) GetAll() ([]model.Load, error) {
 		return nil, fmt.Errorf("turvo GetAll: decode response: %w", err)
 	}
 
-	fmt.Println(response.Details.Shipments)
-
-	loads := make([]model.Load, 0, len(response.Details.Shipments))
-	for _, tl := range response.Details.Shipments {
-		loads = append(loads, turvoToModel(tl))
+	loads := make([]model.Load, len(response.Details.Shipments))
+	for i, tl := range response.Details.Shipments {
+		loads[i] = turvoToModel(tl)
 	}
+
+	if err := r.enrichCustomers(loads); err != nil {
+		return nil, err
+	}
+	fmt.Println(loads[0])
+
 	return loads, nil
+}
+
+// enrichCustomers fetches full customer details concurrently for each load that
+// has a non-empty ExternalTMSId and fills the load's Customer Party in place.
+func (r *TurvoLoadRepository) enrichCustomers(loads []model.Load) error {
+	type result struct {
+		idx int
+		c   model.Customer
+		err error
+	}
+
+	resultc := make(chan result, len(loads))
+	var wg sync.WaitGroup
+
+	for i, load := range loads {
+		if load.Customer.ExternalTMSId == "" {
+			continue
+		}
+		id, err := strconv.Atoi(load.Customer.ExternalTMSId)
+		if err != nil {
+			continue
+		}
+		wg.Add(1)
+		go func(i, id int) {
+			defer wg.Done()
+			c, err := r.GetCustomer(id)
+			resultc <- result{idx: i, c: c, err: err}
+		}(i, id)
+	}
+
+	go func() {
+		wg.Wait()
+		close(resultc)
+	}()
+
+	for res := range resultc {
+		fmt.Println(res.c)
+		if res.err != nil {
+			return fmt.Errorf("turvo GetAll: enrich customer: %w", res.err)
+		}
+		loads[res.idx].Customer = model.Party{
+			ExternalTMSId: res.c.ExternalTMSId,
+			Name:          res.c.Name,
+			AddressLine1:  res.c.AddressLine1,
+			AddressLine2:  res.c.AddressLine2,
+			City:          res.c.City,
+			State:         res.c.State,
+			Zipcode:       res.c.Zipcode,
+			Country:       res.c.Country,
+			Contact:       res.c.Contact,
+			Phone:         res.c.Phone,
+			Email:         res.c.Email,
+		}
+	}
+
+	return nil
+}
+
+// GetCustomer fetches a customer by ID from Turvo and maps it to the internal model.
+func (r *TurvoLoadRepository) GetCustomer(id int) (model.Customer, error) {
+	url := fmt.Sprintf("%s/customers/%d", r.cfg.TurvoBaseURL, id)
+
+	body, statusCode, err := r.doRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return model.Customer{}, err
+	}
+	if statusCode != http.StatusOK {
+		return model.Customer{}, fmt.Errorf("turvo GetCustomer: unexpected status %d: %s", statusCode, body)
+	}
+
+	var response turvoAPIResponse[turvoCustomerDetails]
+	if err := json.Unmarshal(body, &response); err != nil {
+		return model.Customer{}, fmt.Errorf("turvo GetCustomer: decode response: %w", err)
+	}
+
+	return turvoCustomerToModel(response.Details), nil
 }
 
 // Create sends a new load to Turvo and returns the created entity.

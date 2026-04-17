@@ -202,6 +202,22 @@ type turvoLoadsResponse struct {
 	} `json:"pagination"`
 }
 
+// turvoCustomerDetails is the shape of the `details` field in the customer response.
+type turvoCustomerDetails struct {
+	ID            int                           `json:"id"`
+	Name          string                        `json:"name"`
+	TaxID         string                        `json:"taxId"`
+	Status        turvoStatus                   `json:"status"`
+	ParentAccount struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+	} `json:"parentAccount"`
+	Contact turvoContactDetails           `json:"contact"`
+	Address []turvoContactAddressResponse `json:"address"`
+	Email   []turvoContactEmailResponse   `json:"email"`
+	Phone   []turvoContactPhoneResponse   `json:"phone"`
+}
+
 type turvoAuthResponse struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
