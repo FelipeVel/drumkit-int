@@ -34,6 +34,20 @@ func (s *LoadService) GetAll() ([]dto.LoadResponse, error) {
 	return responses, nil
 }
 
+// GetAllCustomers retrieves all customers from the repository and maps them to response DTOs.
+func (s *LoadService) GetAllCustomers() ([]dto.CustomerResponse, error) {
+	customers, err := s.repo.GetAllCustomers()
+	if err != nil {
+		return nil, err
+	}
+
+	responses := make([]dto.CustomerResponse, 0, len(customers))
+	for _, c := range customers {
+		responses = append(responses, customerToResponse(c))
+	}
+	return responses, nil
+}
+
 // Create maps the incoming request DTO to a domain model, persists it via
 // the repository, and returns the created entity as a response DTO.
 func (s *LoadService) Create(req dto.CreateLoadRequest) (dto.CreateLoadResponse, error) {
@@ -417,6 +431,22 @@ func specificationsToDTO(s model.Specifications) dto.SpecificationsDTO {
 		Seal:              s.Seal,
 		CustomBonded:      s.CustomBonded,
 		Labor:             s.Labor,
+	}
+}
+
+func customerToResponse(c model.Customer) dto.CustomerResponse {
+	return dto.CustomerResponse{
+		ExternalTMSId: c.ExternalTMSId,
+		Name:          c.Name,
+		AddressLine1:  c.AddressLine1,
+		AddressLine2:  c.AddressLine2,
+		City:          c.City,
+		State:         c.State,
+		Zipcode:       c.Zipcode,
+		Country:       c.Country,
+		Contact:       c.Contact,
+		Phone:         c.Phone,
+		Email:         c.Email,
 	}
 }
 

@@ -8,4 +8,5 @@ import "github.com/FelipeVel/drumkit-int/internal/model"
 type LoadRepository interface {
 	GetAll() ([]model.Load, error)
 	Create(load model.Load) (int, error)
+	GetAllCustomers() ([]model.Customer, error)
 }

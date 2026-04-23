@@ -192,6 +192,30 @@ func (r *TurvoLoadRepository) enrichCustomers(loads []model.Load) error {
 	return nil
 }
 
+// GetAllCustomers fetches the full customer list from Turvo via POST /customers/list.
+func (r *TurvoLoadRepository) GetAllCustomers() ([]model.Customer, error) {
+	url := r.cfg.TurvoBaseURL + "/customers/list"
+
+	body, statusCode, err := r.doRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	if statusCode != http.StatusOK {
+		return nil, fmt.Errorf("turvo GetAllCustomers: unexpected status %d: %s", statusCode, body)
+	}
+
+	var response turvoAPIResponse[turvoCustomerListResponse]
+	if err := json.Unmarshal(body, &response); err != nil {
+		return nil, fmt.Errorf("turvo GetAllCustomers: decode response: %w", err)
+	}
+
+	customers := make([]model.Customer, len(response.Details.Customers))
+	for i, tc := range response.Details.Customers {
+		customers[i] = turvoCustomerListEntryToModel(tc)
+	}
+	return customers, nil
+}
+
 // GetCustomer fetches a customer by ID from Turvo and maps it to the internal model.
 func (r *TurvoLoadRepository) GetCustomer(id int) (model.Customer, error) {
 	url := fmt.Sprintf("%s/customers/%d", r.cfg.TurvoBaseURL, id)
@@ -413,6 +437,7 @@ func (r *TurvoLoadRepository) executeRequest(method, url string, payload []byte)
 	if err != nil {
 		return nil, 0, fmt.Errorf("turvo: build request: %w", err)
 	}
+	fmt.Printf("Token: %s\n", token)
 	req.Header.Set("Authorization", "Bearer "+token)
 	req.Header.Set("X-Api-Key", r.cfg.TurvoAPIKey)
 	req.Header.Set("Content-Type", "application/json")

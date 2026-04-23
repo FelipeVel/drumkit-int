@@ -1,6 +1,8 @@
 package repository
 
-import "time"
+import (
+	"time"
+)
 
 // ---------------------------------------------------------------------------
 // Turvo external API shapes (anti-corruption layer — private to this package)
@@ -226,12 +228,12 @@ type turvoShipmentRouteLocation struct {
 }
 
 type turvoShipmentRoute struct {
-	StopType    turvoKeyValue                  `json:"stopType"`
-	Location    turvoShipmentRouteLocation     `json:"location"`
-	Address     turvoShipmentRouteAddress      `json:"address"`
-	Timezone    string                         `json:"timezone"`
-	Appointment turvoShipmentRouteAppointment  `json:"appointment"`
-	Deleted     bool                           `json:"deleted"`
+	StopType    turvoKeyValue                 `json:"stopType"`
+	Location    turvoShipmentRouteLocation    `json:"location"`
+	Address     turvoShipmentRouteAddress     `json:"address"`
+	Timezone    string                        `json:"timezone"`
+	Appointment turvoShipmentRouteAppointment `json:"appointment"`
+	Deleted     bool                          `json:"deleted"`
 }
 
 type turvoShipmentDriverPhone struct {
@@ -256,19 +258,25 @@ type turvoShipmentExternalID struct {
 }
 
 type turvoShipmentBillToAddress struct {
-	Line1   string `json:"line1"`
-	City    struct{ Name string `json:"name"` } `json:"city"`
-	State   struct{ Name string `json:"name"` } `json:"state"`
-	Country struct{ Name string `json:"name"` } `json:"country"`
-	Zip     string `json:"zip"`
+	Line1 string `json:"line1"`
+	City  struct {
+		Name string `json:"name"`
+	} `json:"city"`
+	State struct {
+		Name string `json:"name"`
+	} `json:"state"`
+	Country struct {
+		Name string `json:"name"`
+	} `json:"country"`
+	Zip string `json:"zip"`
 }
 
 type turvoShipmentBillTo struct {
-	ID      string                      `json:"id"`
-	Name    string                      `json:"billTo"`
-	Address turvoShipmentBillToAddress  `json:"address"`
-	Phone   string                      `json:"phone"`
-	Contact string                      `json:"contact"`
+	ID      string                     `json:"id"`
+	Name    string                     `json:"billTo"`
+	Address turvoShipmentBillToAddress `json:"address"`
+	Phone   string                     `json:"phone"`
+	Contact string                     `json:"contact"`
 }
 
 type turvoShipmentFreightTerms struct {
@@ -276,7 +284,7 @@ type turvoShipmentFreightTerms struct {
 }
 
 type turvoShipmentCustomerOrder struct {
-	ID      int `json:"id"`
+	ID       int `json:"id"`
 	Customer struct {
 		ID   int    `json:"id"`
 		Name string `json:"name"`
@@ -292,9 +300,9 @@ type turvoShipmentCarrierOrder struct {
 		ID   int    `json:"id"`
 		Name string `json:"name"`
 	} `json:"carrier"`
-	Drivers     []turvoShipmentDriver    `json:"drivers"`
+	Drivers     []turvoShipmentDriver     `json:"drivers"`
 	ExternalIds []turvoShipmentExternalID `json:"externalIds"`
-	Deleted     bool                     `json:"deleted"`
+	Deleted     bool                      `json:"deleted"`
 }
 
 type turvoShipment struct {
@@ -310,10 +318,10 @@ type turvoShipment struct {
 
 // turvoCustomerDetails is the shape of the `details` field in the customer response.
 type turvoCustomerDetails struct {
-	ID            int                           `json:"id"`
-	Name          string                        `json:"name"`
-	TaxID         string                        `json:"taxId"`
-	Status        turvoStatus                   `json:"status"`
+	ID            int         `json:"id"`
+	Name          string      `json:"name"`
+	TaxID         string      `json:"taxId"`
+	Status        turvoStatus `json:"status"`
 	ParentAccount struct {
 		ID   int    `json:"id"`
 		Name string `json:"name"`
@@ -328,4 +336,50 @@ type turvoAuthResponse struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 	ExpiresIn    int    `json:"expires_in"` // seconds until the token expires
+}
+
+type turvoCustomerListStatus struct {
+	Code        int    `json:"code"`
+	Description string `json:"description"`
+}
+
+type turvoCustomerListAddress struct {
+	City      string `json:"city"`
+	State     string `json:"state"`
+	Zip       string `json:"zip"`
+	Line1     string `json:"line1"`
+	Line2     string `json:"line2,omitempty"`
+	Country   string `json:"country"`
+	IsPrimary bool   `json:"isPrimary"`
+}
+
+type turvoCustomerListParentAccount struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+	Type string `json:"type"`
+}
+
+type turvoCustomerListEntry struct {
+	ID            int                            `json:"id"`
+	Name          string                         `json:"name"`
+	Created       time.Time                      `json:"created"`
+	Updated       time.Time                      `json:"updated"`
+	Addresses     []turvoCustomerListAddress     `json:"address"`
+	ParentAccount turvoCustomerListParentAccount `json:"parentAccount"`
+	Status        turvoCustomerListStatus        `json:"status"`
+	Email         []turvoCustomerListEmail       `json:"email"`
+}
+
+type turvoCustomerListEmail struct {
+	Email string `json:"email"`
+}
+
+type turvoCustomerListResponse struct {
+	Pagination struct {
+		Start              int  `json:"start"`
+		PageSize           int  `json:"pageSize"`
+		TotalRecordsInPage int  `json:"totalRecordsInPage"`
+		MoreAvailable      bool `json:"moreAvailable"`
+	} `json:"pagination"`
+	Customers []turvoCustomerListEntry `json:"customers"`
 }

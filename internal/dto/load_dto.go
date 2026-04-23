@@ -2,6 +2,21 @@ package dto
 
 import "time"
 
+// CustomerResponse is the wire representation of a Turvo customer account.
+type CustomerResponse struct {
+	ExternalTMSId string `json:"externalTMSId,omitempty"`
+	Name          string `json:"name,omitempty"`
+	AddressLine1  string `json:"addressLine1,omitempty"`
+	AddressLine2  string `json:"addressLine2,omitempty"`
+	City          string `json:"city,omitempty"`
+	State         string `json:"state,omitempty"`
+	Zipcode       string `json:"zipcode,omitempty"`
+	Country       string `json:"country,omitempty"`
+	Contact       string `json:"contact,omitempty"`
+	Phone         string `json:"phone,omitempty"`
+	Email         string `json:"email,omitempty"`
+}
+
 // PartyDTO is the wire representation of a load participant (customer, bill-to, etc.).
 type PartyDTO struct {
 	ExternalTMSId string `json:"externalTMSId,omitempty"`

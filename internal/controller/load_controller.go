@@ -23,6 +23,7 @@ func NewLoadController(svc *service.LoadService) *LoadController {
 // RegisterRoutes attaches the controller's handlers to the provided router group.
 func (c *LoadController) RegisterRoutes(rg *gin.RouterGroup) {
 	rg.GET("/loads", c.GetAll)
+	rg.GET("/customers", c.GetCustomers)
 	rg.POST("/integrations/webhooks/loads", c.Create)
 }
 
@@ -42,6 +43,24 @@ func (c *LoadController) GetAll(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, loads)
+}
+
+// GetCustomers handles GET /customers.
+//
+// @Summary      List all customers
+// @Description  Returns all customers synced from Turvo.
+// @Tags         customers
+// @Produce      json
+// @Success      200  {array}   dto.CustomerResponse
+// @Failure      500  {object}  map[string]string
+// @Router       /customers [get]
+func (c *LoadController) GetCustomers(ctx *gin.Context) {
+	customers, err := c.svc.GetAllCustomers()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, customers)
 }
 
 // Create handles POST /integrations/webhooks/loads.
