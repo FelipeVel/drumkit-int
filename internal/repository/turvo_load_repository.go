@@ -170,7 +170,6 @@ func (r *TurvoLoadRepository) enrichCustomers(loads []model.Load) error {
 	}()
 
 	for res := range resultc {
-		fmt.Println(res.c)
 		if res.err != nil {
 			return fmt.Errorf("turvo GetAll: enrich customer: %w", res.err)
 		}
@@ -437,7 +436,6 @@ func (r *TurvoLoadRepository) executeRequest(method, url string, payload []byte)
 	if err != nil {
 		return nil, 0, fmt.Errorf("turvo: build request: %w", err)
 	}
-	fmt.Printf("Token: %s\n", token)
 	req.Header.Set("Authorization", "Bearer "+token)
 	req.Header.Set("X-Api-Key", r.cfg.TurvoAPIKey)
 	req.Header.Set("Content-Type", "application/json")
